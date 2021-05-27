@@ -7,7 +7,7 @@ State.loadMap();    //load the ConceptMap and create the hashMap.
 //the Vue application object
 const app = Vue.createApp({
     created()  {
-        //listen to all events through the event bus
+        //listen to all events through the event bus so they can be logged...
         emitter.on('*', (name, e) => console.log("Event:" + name, e) )
     }
 })
@@ -33,9 +33,9 @@ const selectPatient = {
         <button @click="select">Load</button>
     `
 }
-
 app.component('select-patient',selectPatient)
 
+//list observations for a given identifier
 const listObservations = {
     template: `
        
@@ -77,5 +77,43 @@ const listObservations = {
     }
 }
 app.component('list-observations',listObservations)
+
+//display the mapping from the ConceptMap
+const conceptMap = {
+   
+    data() {
+        return {
+            mapList : [] 
+        }
+    },
+
+    template: `
+        <table class="table is-bordered">
+            <thead>
+                <tr><th>Source Code</th><th>Target code</th></tr>
+            </thead>
+        <tbody>
+            <tr v-for = "map in mapList">
+                <td>{{map.key}}</td>
+                <td>{{map.map}}</td>
+              
+            </tr>
+        </tbody>
+    </table>
+
+        
+    `, 
+    created()  {
+        emitter.on('hash',(mapList) => {
+            //console.log('selectpatient event in list',identifier)
+            this.mapList = mapList
+        })
+    }
+}
+app.component('concept-map',conceptMap)
+
+
+//experiment with tabs: https://codepen.io/team/Vue/pen/oNXaoKy
+
 
 app.mount("#app");

@@ -1,4 +1,4 @@
-//Adds the State variable to the window object. OK for prototyping...
+//Adds the State variable to the window object. Kind of like a service in angularJS. OK for prototyping...
 window.State = (function(){
 
     const state = {}
@@ -16,15 +16,26 @@ window.State = (function(){
                 let hash = {}   //will hold the translated code from bespoke lab to NZPOC
                 //iterate through the groups & elements to create the hash. No error checking performed.
                 conceptMap.group.forEach(function(group){
-                    if (group.source == 'http://clinfhir.com/ns/clinFHIRLab' &&
-                        group.target == 'http://loinc.org') {
+
+                    //if (group.source == 'http://clinfhir.com/ns/clinFHIRLab') {
                             group.element.forEach(function (element) {
-                                //let key = 
-                                hash[element.code] = element.target[0].code
+                                let mapFrom = group.source + "#" + element.code
+                                let mapTo = group.target + "#" + element.target[0].code   //assume only 1
+                                hash[mapFrom] = mapTo
                             })
-                    }
+                   // }
                 })
                 that.hashMap = hash
+
+                //create a list of the hash for display...
+                let hashDisplay = []
+                Object.keys(hash).forEach(function(key){
+                    let map = hash[key]
+                    hashDisplay.push({key:key,map:map})
+                })
+
+                //tell the component it's ready....
+                emitter.emit('hash',hashDisplay)
 
             })
         })
@@ -32,13 +43,15 @@ window.State = (function(){
 
 
     //function to load lab data, and convert to an internal object for display
+    //not doing any error checking
+
     state.loadData = function(identifier) {
         //console.log(this.hashMap)
        
         return new Promise((resolve,reject)=> {
-            //let url = "http://home.clinfhir.com:8054/baseR4/Observation?patient.identifier=http://clinfhir.com|abc1234"
+            //don't include the system in the identifier query for now...
             let url = "http://home.clinfhir.com:8054/baseR4/Observation?patient.identifier=" + identifier;
-            console.log(url)
+           
             axios.get(url).then(function(data) {
                 //convert Bundle to data 
                 console.log(data)
@@ -55,15 +68,10 @@ window.State = (function(){
                         arObservations.push(observation)
                     });
                 }
-               
-
-
+            
                 resolve(arObservations)
-
-
-                
             })
-        
+    
     })}
 
     
