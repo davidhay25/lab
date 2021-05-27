@@ -18,11 +18,11 @@ window.State = (function(){
                 conceptMap.group.forEach(function(group){
 
                     //if (group.source == 'http://clinfhir.com/ns/clinFHIRLab') {
-                            group.element.forEach(function (element) {
-                                let mapFrom = group.source + "#" + element.code
-                                let mapTo = group.target + "#" + element.target[0].code   //assume only 1
-                                hash[mapFrom] = mapTo
-                            })
+                    group.element.forEach(function (element) {
+                        let mapFrom = group.source + "#" + element.code
+                        let mapTo = group.target + "#" + element.target[0].code   //assume only 1
+                        hash[mapFrom] = mapTo
+                    })
                    // }
                 })
                 that.hashMap = hash
@@ -42,12 +42,13 @@ window.State = (function(){
     }
 
 
-    //function to load lab data, and convert to an internal object for display
-    //not doing any error checking
+    //function to load all lab data for this identifier, and convert to an internal object for display
+    //check the hashMap to see if the code has been mapped
 
     state.loadData = function(identifier) {
+        
         //console.log(this.hashMap)
-       
+        let that = this;        //needed to access hashmap in code below...
         return new Promise((resolve,reject)=> {
             //don't include the system in the identifier query for now...
             let url = "http://home.clinfhir.com:8054/baseR4/Observation?patient.identifier=" + identifier;
@@ -64,7 +65,21 @@ window.State = (function(){
     
                         observation.resource = resource;    //So we can get at the details if needed...
                         observation.date = resource.effectiveDateTime;
-                        
+                        observation.value = resource.valueQuantity
+                        if (resource.valueQuantity) {
+                            observation.valueDisplay = resource.valueQuantity.value + " " + resource.valueQuantity.unit
+                        }
+                       
+                        if (resource.code && resource.code.coding) {
+                            //the original code
+                            observation.sourceCode = resource.code.coding[0].system + "#" + resource.code.coding[0].code
+                            observation.code = observation.sourceCode   //the default 'real' code
+                            //see if there is a map for this code
+                            if (that.hashMap[observation.sourceCode]) {
+                                observation.code = that.hashMap[observation.sourceCode];    //the mapped code
+                            }
+
+                        }
                         arObservations.push(observation)
                     });
                 }

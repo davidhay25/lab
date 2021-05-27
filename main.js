@@ -41,14 +41,16 @@ const listObservations = {
        
         <table class="table is-bordered">
             <thead>
-                <tr><th>Date</th><th>Name</th><th>Value</th></tr>
+                <tr><th>Date</th><th>Name</th><th>Value</th><th>Source Code</th><th>Mapped Code</th></tr>
             </thead>
         <tbody>
             <tr v-for = "observation in observations">
                 <td>{{observation.date}}</td>
                 <td>{{observation.name}}</td>
-                <td>{{observation.value}}</td>
-                <td>{{observation.resource.code}}</td>
+                <td>{{observation.valueDisplay}}</td>
+                <td>{{observation.sourceCode}}</td>
+                <td>{{observation.code}}</td>
+               
             </tr>
         </tbody>
         </table>
@@ -96,7 +98,6 @@ const conceptMap = {
             <tr v-for = "map in mapList">
                 <td>{{map.key}}</td>
                 <td>{{map.map}}</td>
-              
             </tr>
         </tbody>
     </table>
