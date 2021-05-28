@@ -33,9 +33,10 @@ window.State = (function(){
                     let map = hash[key]
                     hashDisplay.push({key:key,map:map})
                 })
+                that.hashDisplay = hashDisplay;
 
                 //tell the component it's ready....
-                emitter.emit('hash',hashDisplay)
+                //emitter.emit('hash',hashDisplay)
 
             })
         })

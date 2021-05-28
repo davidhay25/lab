@@ -24,6 +24,23 @@
             </div>
           </nav>
         <div id="app">
+
+            <div class="demo">
+                <button
+                    v-for="tab in tabs"
+                    v-bind:key="tab"
+                    v-bind:class="['tab-button', { active: currentTab === tab }]"
+                    v-on:click="currentTab = tab">
+                    {{ tab }}
+                </button>
+    
+                <keep-alive>
+                    <component v-bind:is="currentTabComponent" class="tab"></component>
+                </keep-alive>
+            </div>
+
+
+            <!--
             <section class="section">
                 <div class="container">
                     <h3>Select Patient</h3>
@@ -38,11 +55,17 @@
                  
                 <list-observations> </list-observations>
 
+               
                 <h3>Map</h3>
-                <concept-map></concept-map>
+                    <concept-map></concept-map>
                 <em>Derived from ConceptMap</em>
 
-        </section>
+
+            </section>
+-->
+
+
+
     </div>
       
 

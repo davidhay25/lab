@@ -6,6 +6,17 @@ State.loadMap();    //load the ConceptMap and create the hashMap.
 
 //the Vue application object
 const app = Vue.createApp({
+    data() {
+        return {
+          currentTab: 'Query',
+          tabs: ['Query', 'Map']
+        }
+      },
+      computed: {
+        currentTabComponent() {
+          return 'tab-' + this.currentTab.toLowerCase()
+        }
+      },
     created()  {
         //listen to all events through the event bus so they can be logged...
         emitter.on('*', (name, e) => console.log("Event:" + name, e) )
@@ -105,16 +116,38 @@ const conceptMap = {
         
     `, 
     created()  {
-        emitter.on('hash',(mapList) => {
-            //console.log('selectpatient event in list',identifier)
-            this.mapList = mapList
-        })
+
+        if (this.mapList.length == 0) {
+            console.log('list is empty')
+            this.mapList = State.hashDisplay
+        }
+
+       // emitter.on('hash',(mapList) => {        
+        //    this.mapList = mapList
+      //  })
+
     }
 }
 app.component('concept-map',conceptMap)
 
 
 //experiment with tabs: https://codepen.io/team/Vue/pen/oNXaoKy
+app.component('tab-query', {
+    template: `
+        <div class="demo-tab">
+            <select-patient></select-patient>
+            <list-observations> </list-observations>
+        </div>`
+})
+app.component('tab-map', {
+    template: `
+        <div class="demo-tab">
+            <concept-map> </concept-map>
+            <!-- <button @click="load">Load</button> -->
+        </div>`
+})
+
+
 
 
 app.mount("#app");
